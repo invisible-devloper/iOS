@@ -96,7 +96,9 @@ async def add_url_button(_, message: Message):
         return await message.reply_text("Usage: /addurl [row] Text | https://link")
     row, text, url = parsed
     if not url.startswith(("http://", "https://", "tg://")):
-        return await message.reply_text("URL must start with http://, https:// or tg://")
+        return await message.reply_text(
+            "URL must start with http://, https:// or tg://"
+        )
     ok, err = await add_button("url", text[:64], url, row)
     await message.reply_text("URL button added." if ok else err)
 
@@ -136,8 +138,12 @@ async def move_button_cmd(_, message: Message):
     args = _ints(message, 3, 4)
     if not args:
         return await message.reply_text("Usage: /movebutton row col to_row [to_col]")
-    ok = await move_button(args[0], args[1], args[2], args[3] if len(args) == 4 else None)
-    await message.reply_text("Button moved." if ok else "Invalid position or target row full.")
+    ok = await move_button(
+        args[0], args[1], args[2], args[3] if len(args) == 4 else None
+    )
+    await message.reply_text(
+        "Button moved." if ok else "Invalid position or target row full."
+    )
 
 
 @app.on_message(filters.command("clearbuttons") & filters.private & OWNER)
@@ -148,7 +154,7 @@ async def clear_buttons(_, message: Message):
 
 @app.on_callback_query(filters.regex(f"^{CB_PREFIX}"))
 async def custom_button_click(_, query):
-    content = await get_message(query.data[len(CB_PREFIX):])
+    content = await get_message(query.data[len(CB_PREFIX) :])
     if content is None:
         return await query.answer("This button no longer exists.", show_alert=True)
     if len(content) <= 200:

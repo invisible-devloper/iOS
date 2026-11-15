@@ -18,6 +18,7 @@ import config
 from AloneMusic import app
 from AloneMusic.misc import _boot_
 from AloneMusic.plugins.sudo.sudoers import sudoers_list
+from AloneMusic.utils.custombuttons import get_custom_rows
 from AloneMusic.utils.database import (
     add_served_chat,
     add_served_user,
@@ -26,7 +27,6 @@ from AloneMusic.utils.database import (
     is_banned_user,
     is_on_off,
 )
-from AloneMusic.utils.custombuttons import get_custom_rows
 from AloneMusic.utils.decorators.language import LanguageStart
 from AloneMusic.utils.formatters import get_readable_time
 from AloneMusic.utils.inline import help_pannel, private_panel, start_panel
