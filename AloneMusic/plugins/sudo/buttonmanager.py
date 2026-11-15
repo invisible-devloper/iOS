@@ -9,7 +9,11 @@
 # /movebutton <row> <col> <to_row> [to_col]   move a button (to_row = rows+1 makes a new row)
 # /clearbuttons                          remove all buttons
 
+from html import escape
+from urllib.parse import urlparse
+
 from pyrogram import filters
+from pyrogram.enums import ParseMode
 from pyrogram.types import InlineKeyboardMarkup, Message
 
 import config
@@ -66,6 +70,16 @@ def _ints(message: Message, minimum: int, maximum: int):
     return [int(a) for a in args]
 
 
+def _valid_url(url: str) -> bool:
+    # Telegram rejects bad button URLs for the whole keyboard, which would break /start.
+    if " " in url or len(url) > 512:
+        return False
+    parsed = urlparse(url)
+    if parsed.scheme in ("http", "https"):
+        return "." in parsed.netloc and not parsed.netloc.startswith(".")
+    return parsed.scheme == "tg" and bool(parsed.netloc)
+
+
 async def _layout_text() -> str:
     rows = await get_layout()
     if not rows:
@@ -73,7 +87,7 @@ async def _layout_text() -> str:
     lines = []
     for i, row in enumerate(rows, 1):
         cells = [
-            f"{j}. {'🔗' if b['type'] == 'url' else '💬'} {b['text']}"
+            f"{j}. {'🔗' if b['type'] == 'url' else '💬'} {escape(b['text'])}"
             for j, b in enumerate(row, 1)
         ]
         lines.append(f"<b>Row {i}:</b> " + "  ".join(cells))
@@ -95,9 +109,9 @@ async def add_url_button(_, message: Message):
     if not parsed:
         return await message.reply_text("Usage: /addurl [row] Text | https://link")
     row, text, url = parsed
-    if not url.startswith(("http://", "https://", "tg://")):
+    if not _valid_url(url):
         return await message.reply_text(
-            "URL must start with http://, https:// or tg://"
+            "Invalid URL. Use https://example.com/... or tg://..."
         )
     ok, err = await add_button("url", text[:64], url, row)
     await message.reply_text("URL button added." if ok else err)
@@ -160,4 +174,4 @@ async def custom_button_click(_, query):
     if len(content) <= 200:
         return await query.answer(content, show_alert=True)
     await query.answer()
-    await query.message.reply_text(content)
+    await query.message.reply_text(content, parse_mode=ParseMode.DISABLED)

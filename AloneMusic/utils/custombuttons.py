@@ -2,17 +2,20 @@
 # Owner-managed custom buttons: storage and keyboard rendering.
 # Stored in the existing MongoDB (collection `custombuttons`), one layout document.
 
+import asyncio
 import uuid
 
 from pyrogram.types import InlineKeyboardButton
 
 from AloneMusic.core.mongo import mongodb
+from AloneMusic.log import LOGGER
 
 buttondb = mongodb.custombuttons
 _LAYOUT_ID = "layout"
 CB_PREFIX = "cbtn:"
 MAX_PER_ROW = 8
 MAX_BUTTONS = 40
+DISPLAY_TIMEOUT = 2  # seconds; keeps /start fast if MongoDB is slow or down
 
 
 async def get_layout() -> list:
@@ -89,10 +92,15 @@ async def move_button(row: int, col: int, to_row: int, to_col: int | None) -> bo
 
 
 async def get_message(button_id: str):
-    for row in await get_layout():
+    try:
+        rows = await asyncio.wait_for(get_layout(), DISPLAY_TIMEOUT)
+    except Exception as ex:  # noqa: BLE001 - callbacks must not raise
+        LOGGER(__name__).warning(f"Custom button lookup failed: {type(ex).__name__}")
+        return None
+    for row in rows:
         for b in row:
-            if b["id"] == button_id:
-                return b["value"] if b["type"] == "msg" else None
+            if b.get("id") == button_id:
+                return b["value"] if b.get("type") == "msg" else None
     return None
 
 
@@ -117,6 +125,7 @@ def to_keyboard(rows: list) -> list:
 async def get_custom_rows() -> list:
     """Keyboard rows for display; never raises (safe to call from /start)."""
     try:
-        return to_keyboard(await get_layout())
-    except Exception:
+        return to_keyboard(await asyncio.wait_for(get_layout(), DISPLAY_TIMEOUT))
+    except Exception as ex:  # noqa: BLE001 - /start must never fail because of this
+        LOGGER(__name__).warning(f"Custom buttons skipped: {type(ex).__name__}")
         return []
