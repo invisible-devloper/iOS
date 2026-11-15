@@ -26,6 +26,7 @@ from AloneMusic.utils.database import (
     is_banned_user,
     is_on_off,
 )
+from AloneMusic.utils.custombuttons import get_custom_rows
 from AloneMusic.utils.decorators.language import LanguageStart
 from AloneMusic.utils.formatters import get_readable_time
 from AloneMusic.utils.inline import help_pannel, private_panel, start_panel
@@ -108,7 +109,7 @@ async def start_pm(client, message: Message, _):
                     text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b>.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
                 )
     else:
-        out = private_panel(_)
+        out = private_panel(_) + await get_custom_rows()
         await message.reply_photo(
             photo=config.START_IMG_URL,
             message_effect_id=random.choice(EFFECT_ID),
