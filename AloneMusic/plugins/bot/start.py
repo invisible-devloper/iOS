@@ -12,12 +12,19 @@ import time
 from py_yt import VideosSearch
 from pyrogram import filters
 from pyrogram.enums import ChatType
+from pyrogram.errors import (
+    ButtonDataInvalid,
+    ButtonTypeInvalid,
+    ButtonUrlInvalid,
+    ReplyMarkupInvalid,
+)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 import config
 from AloneMusic import app
 from AloneMusic.misc import _boot_
 from AloneMusic.plugins.sudo.sudoers import sudoers_list
+from AloneMusic.utils.custombuttons import get_custom_rows
 from AloneMusic.utils.database import (
     add_served_chat,
     add_served_user,
@@ -109,12 +116,28 @@ async def start_pm(client, message: Message, _):
                 )
     else:
         out = private_panel(_)
-        await message.reply_photo(
+        custom = await get_custom_rows()
+        photo_kwargs = dict(
             photo=config.START_IMG_URL,
             message_effect_id=random.choice(EFFECT_ID),
             caption=_["start_2"].format(message.from_user.mention, app.mention),
-            reply_markup=InlineKeyboardMarkup(out),
         )
+        try:
+            await message.reply_photo(
+                reply_markup=InlineKeyboardMarkup(out + custom), **photo_kwargs
+            )
+        except (
+            ButtonUrlInvalid,
+            ButtonDataInvalid,
+            ButtonTypeInvalid,
+            ReplyMarkupInvalid,
+        ):
+            if not custom:
+                raise
+            # Telegram rejected a custom button: resend with the original buttons only.
+            await message.reply_photo(
+                reply_markup=InlineKeyboardMarkup(out), **photo_kwargs
+            )
         if await is_on_off(2):
             return await app.send_message(
                 chat_id=config.LOGGER_ID,
