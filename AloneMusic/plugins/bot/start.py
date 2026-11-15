@@ -12,6 +12,12 @@ import time
 from py_yt import VideosSearch
 from pyrogram import filters
 from pyrogram.enums import ChatType
+from pyrogram.errors import (
+    ButtonDataInvalid,
+    ButtonTypeInvalid,
+    ButtonUrlInvalid,
+    ReplyMarkupInvalid,
+)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 import config
@@ -109,13 +115,29 @@ async def start_pm(client, message: Message, _):
                     text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b>.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
                 )
     else:
-        out = private_panel(_) + await get_custom_rows()
-        await message.reply_photo(
+        out = private_panel(_)
+        custom = await get_custom_rows()
+        photo_kwargs = dict(
             photo=config.START_IMG_URL,
             message_effect_id=random.choice(EFFECT_ID),
             caption=_["start_2"].format(message.from_user.mention, app.mention),
-            reply_markup=InlineKeyboardMarkup(out),
         )
+        try:
+            await message.reply_photo(
+                reply_markup=InlineKeyboardMarkup(out + custom), **photo_kwargs
+            )
+        except (
+            ButtonUrlInvalid,
+            ButtonDataInvalid,
+            ButtonTypeInvalid,
+            ReplyMarkupInvalid,
+        ):
+            if not custom:
+                raise
+            # Telegram rejected a custom button: resend with the original buttons only.
+            await message.reply_photo(
+                reply_markup=InlineKeyboardMarkup(out), **photo_kwargs
+            )
         if await is_on_off(2):
             return await app.send_message(
                 chat_id=config.LOGGER_ID,
