@@ -56,7 +56,7 @@ def private_panel(_):
             ),
             InlineKeyboardButton(
     text="Øwηꫀr",
-    url="https://t.me/@II_KAAL_II",
+    url="https://t.me/II_KAAL_II",
 ),
         ],
     ]
