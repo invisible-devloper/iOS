@@ -55,9 +55,9 @@ def private_panel(_):
                 callback_data="LG",
             ),
             InlineKeyboardButton(
-                text="🐙 Source Code",
-                url=config.UPSTREAM_REPO,
-            ),
+    text="Øwηꫀr",
+    url="https://t.me/@II_KAAL_II",
+),
         ],
     ]
     return buttons
