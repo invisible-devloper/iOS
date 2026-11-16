@@ -1,4 +1,4 @@
-# 🎵 AloneMusic
+# 🎵 iOS Music
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
@@ -9,7 +9,7 @@
 
 
 ## 🚀 Introduction
-**AloneMusic** is a Python-based **music bot/service** that allows users to play, pause, skip, and manage playlists with ease.  
+**iOSMusic** is a Python-based **music bot/service** that allows users to play, pause, skip, and manage playlists with ease.  
 It’s designed to be lightweight, fast, and customizable.  
 
 ---
