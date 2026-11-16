@@ -91,14 +91,14 @@ confirmer = {}
 
 START_IMG_URL = getenv(
     "START_IMG_URL",
-    "https://files.catbox.moe/34xlvu.jpg",
+    "https://kommodo.ai/i/Eo0qOBw2XINsvMeuqihh",
 )
 PING_IMG_URL = getenv(
     "PING_IMG_URL",
     "https://files.catbox.moe/34xlvu.jpg",
 )
 PLAYLIST_IMG_URL = "https://files.catbox.moe/34xlvu.jpg"
-STATS_IMG_URL = "https://files.catbox.moe/34xlvu.jpg""
+STATS_IMG_URL = "https://kommodo.ai/i/Eo0qOBw2XINsvMeuqihh""
 TELEGRAM_AUDIO_URL = "https://files.catbox.moe/34xlvu.jpg"
 TELEGRAM_VIDEO_URL = "https://files.catbox.moe/34xlvu.jpg"
 STREAM_IMG_URL = "https://files.catbox.moe/34xlvu.jpg"
